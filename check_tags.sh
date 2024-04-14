@@ -330,20 +330,10 @@ elif [[ "${ASSETS}" != "null" ]]; then
 
       # linux-riscv64
       if [[ "${VSCODE_ARCH}" == "riscv64" || "${CHECK_ALL}" == "yes" ]]; then
-        if [[ -z $( contains "riscv64.deb" ) ]]; then
-          echo "Building on Linux RISC-V 64 because we have no DEB"
-          export SHOULD_BUILD="yes"
-        else
-          export SHOULD_BUILD_DEB="no"
-        fi
-
-        if [[ -z $( contains "riscv64.rpm" ) ]]; then
-          echo "Building on Linux RISC-V 64 because we have no RPM"
-          export SHOULD_BUILD="yes"
-        else
-          export SHOULD_BUILD_RPM="no"
-        fi
-
+        export SHOULD_BUILD_DEB="no"
+        export SHOULD_BUILD_RPM="no"
+        export SHOULD_BUILD_APPIMAGE="no"
+      
         if [[ -z $( contains "${APP_NAME}-linux-riscv64-${RELEASE_VERSION}.tar.gz" ) ]]; then
           echo "Building on Linux RISC-V 64 because we have no TAR"
           export SHOULD_BUILD="yes"
@@ -357,8 +347,6 @@ elif [[ "${ASSETS}" != "null" ]]; then
         else
           export SHOULD_BUILD_REH="no"
         fi
-
-        export SHOULD_BUILD_APPIMAGE="no"
 
         if [[ "${SHOULD_BUILD}" != "yes" ]]; then
           echo "Already have all the Linux riscv64 builds"
@@ -416,6 +404,9 @@ else
       SHOULD_BUILD_DEB="no"
       SHOULD_BUILD_RPM="no"
       SHOULD_BUILD_TAR="no"
+    elif [[ "${VSCODE_ARCH}" == "riscv64" ]]; then
+      SHOULD_BUILD_DEB="no"
+      SHOULD_BUILD_RPM="no"
     fi
     if [[ "${VSCODE_ARCH}" != "x64" ]]; then
       export SHOULD_BUILD_APPIMAGE="no"
