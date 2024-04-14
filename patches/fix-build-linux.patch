@@ -1,56 +1,61 @@
 diff --git a/build/gulpfile.vscode.linux.js b/build/gulpfile.vscode.linux.js
-index 8c2b62f..843e8d4 100644
+index 8c2b62f7b2a..843e8d4cb26 100644
 --- a/build/gulpfile.vscode.linux.js
 +++ b/build/gulpfile.vscode.linux.js
-@@ -187,2 +187,3 @@ function prepareRpmPackage(arch) {
+@@ -185,6 +185,7 @@ function prepareRpmPackage(arch) {
+ 			.pipe(rename(function (p) { p.dirname = 'BUILD/usr/share/' + product.applicationName + '/' + p.dirname; }));
+ 
  		const spec = code.pipe(es.through(
 +			null,
  			async function () {
-@@ -302,4 +303,3 @@ BUILD_TARGETS.forEach(({ arch }) => {
+ 				const that = this;
+ 				const dependencies = await dependenciesGenerator.getDependencies('rpm', binaryDir, product.applicationName, rpmArch);
+@@ -300,14 +301,12 @@ const BUILD_TARGETS = [
+ BUILD_TARGETS.forEach(({ arch }) => {
+ 	const debArch = getDebPackageArch(arch);
  	const prepareDebTask = task.define(`vscode-linux-${arch}-prepare-deb`, task.series(util.rimraf(`.build/linux/deb/${debArch}`), prepareDebPackage(arch)));
 -	gulp.task(prepareDebTask);
 -	const buildDebTask = task.define(`vscode-linux-${arch}-build-deb`, buildDebPackage(arch));
 +	const buildDebTask = task.define(`vscode-linux-${arch}-build-deb`, task.series(prepareDebTask, buildDebPackage(arch)));
  	gulp.task(buildDebTask);
-@@ -308,4 +308,3 @@ BUILD_TARGETS.forEach(({ arch }) => {
+ 
+ 	const rpmArch = getRpmPackageArch(arch);
  	const prepareRpmTask = task.define(`vscode-linux-${arch}-prepare-rpm`, task.series(util.rimraf(`.build/linux/rpm/${rpmArch}`), prepareRpmPackage(arch)));
 -	gulp.task(prepareRpmTask);
 -	const buildRpmTask = task.define(`vscode-linux-${arch}-build-rpm`, buildRpmPackage(arch));
 +	const buildRpmTask = task.define(`vscode-linux-${arch}-build-rpm`, task.series(prepareRpmTask, buildRpmPackage(arch)));
  	gulp.task(buildRpmTask);
-diff --git a/build/linux/dependencies-generator.js b/build/linux/dependencies-generator.js
-index 80c247d..40f1df2 100644
---- a/build/linux/dependencies-generator.js
-+++ b/build/linux/dependencies-generator.js
-@@ -24,3 +24,3 @@ const product = require("../../product.json");
- // are valid, are in dep-lists.ts
--const FAIL_BUILD_FOR_NEW_DEPENDENCIES = true;
-+const FAIL_BUILD_FOR_NEW_DEPENDENCIES = false;
- // Based on https://source.chromium.org/chromium/chromium/src/+/refs/tags/120.0.6099.268:chrome/installer/linux/BUILD.gn;l=64-80
-@@ -56,3 +56,3 @@ async function getDependencies(packageType, buildDir, applicationName, arch) {
-     // Add the tunnel binary.
--    files.push(path.join(buildDir, 'bin', product.tunnelApplicationName));
-+    // files.push(path.join(buildDir, 'bin', product.tunnelApplicationName));
-     // Add the main executable.
+ 
+ 	const prepareSnapTask = task.define(`vscode-linux-${arch}-prepare-snap`, task.series(util.rimraf(`.build/linux/snap/${arch}`), prepareSnapPackage(arch)));
 diff --git a/build/linux/dependencies-generator.ts b/build/linux/dependencies-generator.ts
-index 9f1a068..48e3d52 100644
+index 9f1a068b8d7..48e3d52067f 100644
 --- a/build/linux/dependencies-generator.ts
 +++ b/build/linux/dependencies-generator.ts
-@@ -25,3 +25,3 @@ import product = require('../../product.json');
+@@ -23,7 +23,7 @@ import product = require('../../product.json');
+ // If true, we fail the build if there are new dependencies found during that task.
+ // The reference dependencies, which one has to update when the new dependencies
  // are valid, are in dep-lists.ts
 -const FAIL_BUILD_FOR_NEW_DEPENDENCIES: boolean = true;
 +const FAIL_BUILD_FOR_NEW_DEPENDENCIES: boolean = false;
  
-@@ -61,3 +61,3 @@ export async function getDependencies(packageType: 'deb' | 'rpm', buildDir: stri
+ // Based on https://source.chromium.org/chromium/chromium/src/+/refs/tags/120.0.6099.268:chrome/installer/linux/BUILD.gn;l=64-80
+ // and the Linux Archive build
+@@ -59,7 +59,7 @@ export async function getDependencies(packageType: 'deb' | 'rpm', buildDir: stri
+ 	// Add the native modules
+ 	const files = findResult.stdout.toString().trimEnd().split('\n');
  	// Add the tunnel binary.
 -	files.push(path.join(buildDir, 'bin', product.tunnelApplicationName));
 +	// files.push(path.join(buildDir, 'bin', product.tunnelApplicationName));
  	// Add the main executable.
+ 	files.push(appPath);
+ 	// Add chrome sandbox and crashpad handler.
 diff --git a/resources/linux/rpm/code.spec.template b/resources/linux/rpm/code.spec.template
-index c9e57db..bda2604 100644
+index c9e57db9562..bda260458a7 100644
 --- a/resources/linux/rpm/code.spec.template
 +++ b/resources/linux/rpm/code.spec.template
-@@ -87 +87,3 @@ update-mime-database %{_datadir}/mime &> /dev/null || :
+@@ -85,3 +85,5 @@ update-mime-database %{_datadir}/mime &> /dev/null || :
+ %{_datadir}/pixmaps/@@ICON@@.png
+ %{_datadir}/bash-completion/completions/%{name}
  %{_datadir}/zsh/site-functions/_%{name}
 +
 +%config(noreplace) /usr/share/%{name}/resources/app/product.json

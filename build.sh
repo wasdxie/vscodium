@@ -14,6 +14,11 @@ if [[ "${SHOULD_BUILD}" == "yes" ]]; then
 
   export NODE_OPTIONS="--max-old-space-size=8192"
 
+  # Some patches(e.g. remove-mangle.patch) causes unused variables and parameters
+  sed -ri '/noUnused(Local|Parameter)s/d' build/tsconfig.json
+  # Recompile ts files in ./build since the patches modifies them
+  yarn --cwd build compile
+
   yarn monaco-compile-check
   yarn valid-layers-check
 

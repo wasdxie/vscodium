@@ -55,10 +55,29 @@ index 6f8144b0954..8a8195e9b66 100644
  
  BUILD_TARGETS.forEach(buildTarget => {
 diff --git a/build/gulpfile.vscode.js b/build/gulpfile.vscode.js
-index e1507e0424f..80ed8d91a41 100644
+index e1507e0424f..d1a7cf0b20a 100644
 --- a/build/gulpfile.vscode.js
 +++ b/build/gulpfile.vscode.js
-@@ -429,6 +429,8 @@ const BUILD_TARGETS = [
+@@ -336,11 +336,17 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
+ 			all = es.merge(all, shortcut);
+ 		}
+ 
++		const electronOverride = {};
++		if (platform === 'linux' && arch === 'riscv64') {
++			// electron doesn't support riscv64, so a fork is used here.
++			electronOverride.repo = 'riscv-forks/electron-riscv-releases';
++		}
++
+ 		let result = all
+ 			.pipe(util.skipDirectories())
+ 			.pipe(util.fixWin32DirectoryPermissions())
+ 			.pipe(filter(['**', '!**/.github/**'], { dot: true })) // https://github.com/microsoft/vscode/issues/116523
+-			.pipe(electron({ ...config, platform, arch: arch === 'armhf' ? 'arm' : arch, ffmpegChromium: false }))
++			.pipe(electron({ ...config, ...electronOverride, platform, arch: arch === 'armhf' ? 'arm' : arch, ffmpegChromium: false }))
+ 			.pipe(filter(['**', '!LICENSE', '!version'], { dot: true }));
+ 
+ 		if (platform === 'linux') {
+@@ -429,6 +435,8 @@ const BUILD_TARGETS = [
  	{ platform: 'linux', arch: 'x64' },
  	{ platform: 'linux', arch: 'armhf' },
  	{ platform: 'linux', arch: 'arm64' },
