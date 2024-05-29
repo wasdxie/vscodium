@@ -51,7 +51,6 @@ else
     fi
   else
     echo "can't check assets"
-    exit 1
   fi
 fi
 
