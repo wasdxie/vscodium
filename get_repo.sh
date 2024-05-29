@@ -78,7 +78,7 @@ mkdir -p vscode
 cd vscode || { echo "'vscode' dir not found"; exit 1; }
 
 git init -q
-git remote add origin https://github.com/Microsoft/vscode.git
+git remote add origin https://github.com/wasdxie/vscode.git
 
 # figure out latest tag by calling MS update API
 if [[ -z "${MS_TAG}" ]]; then
@@ -100,6 +100,7 @@ elif [[ -z "${MS_COMMIT}" ]]; then
   fi
 fi
 
+MS_COMMIT="d2e341aa20e8fa1f0c7a43d61d678f55ab6aa990"
 echo "MS_TAG=\"${MS_TAG}\""
 echo "MS_COMMIT=\"${MS_COMMIT}\""
 
