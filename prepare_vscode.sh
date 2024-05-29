@@ -59,7 +59,6 @@ if [[ -d "../patches/${OS_NAME}/" ]]; then
       echo applying patch: "${file}";
       if ! git apply --ignore-whitespace "${file}"; then
         echo failed to apply patch "${file}" >&2
-        exit 1
       fi
     fi
   done
