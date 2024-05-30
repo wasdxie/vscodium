@@ -294,7 +294,7 @@ jobs:
 
       - name: Build
         env:
-          #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           npm_config_arch: ${{ matrix.npm_arch }}
         run: ./package_linux_reh.sh
         if: env.SHOULD_BUILD_REH != 'no' || github.event.inputs.generate_assets == 'true'
