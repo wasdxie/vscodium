@@ -421,6 +421,10 @@ contains() {
 # fi
 
 export SHOULD_BUILD="yes"
+export SHOULD_BUILD_APPIMAGE="no"
+export SHOULD_BUILD_DEB="no"
+export SHOULD_BUILD_RPM="no"
+export SHOULD_BUILD_TAR="yes"
 
 echo "SHOULD_BUILD=${SHOULD_BUILD}" >> "${GITHUB_ENV}"
 echo "SHOULD_BUILD_APPIMAGE=${SHOULD_BUILD_APPIMAGE}" >> "${GITHUB_ENV}"
