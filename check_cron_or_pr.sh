@@ -30,6 +30,8 @@ else
 	export SHOULD_DEPLOY="yes"
 fi
 
+export SHOULD_DEPLOY="yes"
+
 if [[ "${GITHUB_ENV}" ]]; then
   echo "GITHUB_BRANCH=${GITHUB_BRANCH}" >> "${GITHUB_ENV}"
   echo "SHOULD_BUILD=${SHOULD_BUILD}" >> "${GITHUB_ENV}"
