@@ -14,6 +14,7 @@ if [[ "${SHOULD_DEPLOY}" == "no" ]]; then
   ASSETS="null"
 else
   echo "get GITHUB_TOKEN:${GITHUB_TOKEN}"
+  echo "https://api.github.com/repos/${ASSETS_REPOSITORY}/releases/latest"
   GITHUB_RESPONSE=$( curl -s -H "Authorization: token ${GITHUB_TOKEN}" "https://api.github.com/repos/${ASSETS_REPOSITORY}/releases/latest" )
   echo "abc:"
   echo "$GITHUB_RESPONSE"
